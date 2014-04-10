@@ -31,6 +31,7 @@
 ###########################################################
 
 ## Load required R packages
+# install.packages("RODBC") #Delete first hashtag and run if RODBC is not installed
 library(RODBC)
 
 ## Designate outfile path and name
@@ -72,14 +73,45 @@ HUC5 <- c("1707010301",
           "1709001001", "1709001002", "1709001003", "1709001004", "1709001005", 
           "1709001101", "1709001102", "1709001103", "1709001104", "1709001105", 
           "1709001106", "1709001201", "1709001202", "1709001203")
-HUC5 <- as.numeric(HUC5)
-myAreas <- AreaKeys[AreaKeys$AREA_ABBREVIATION %in% HUC5,]
+
+HUC5 <- as.integer(HUC5) # Need to be as integer because numeric values can have 'junk' extending out to 16 decimal places
+
+
+# Here's an alternative search string.  This produces 31 more HUC5s; maybe due to missing values from the first example?
+HUC5.2<-c("170900.{4}$","170701.{4}$")
+
+HUC5.2.list<-replicate(length(HUC5.2),list()) #empty list for global search
+HUC5.2.1<-character(0) #empty character string
+
+for (i in 1:length(HUC5.2)){
+HUC5.2.list[[i]]<-as.vector(AreaKeys$AREA_ABBREVIATION[grep(HUC5.2[i],as.character(AreaKeys$AREA_ABBREVIATION))])
+HUC5.2.1<-c(HUC5.2.1,HUC5.2.list[[i]])
+}
+
+HUC5.2.2<-as.integer(HUC5.2.1)
+
+# Even better, here's an external file where you can enter your search string (.csv file should have been pushed back to GitHub)
+HUC5.3<-read.csv("HUC5.csv",as.is=T)
+
+HUC5.3.list<-replicate(length(HUC5.3$HUC5),list()) #empty list for global search
+HUC5.3.1<-character(0) #empty character string
+
+for (i in 1:length(HUC5.3$HUC5)){
+  HUC5.3.list[[i]]<-as.vector(AreaKeys$AREA_ABBREVIATION[grep(HUC5.3$HUC5[i],as.character(AreaKeys$AREA_ABBREVIATION))])
+  HUC5.3.1<-c(HUC5.3.1,HUC5.3.list[[i]])
+}
+
+HUC5.3.2<-as.integer(HUC5.3.1)
+
+####
+
+myAreas <- AreaKeys[AreaKeys$AREA_ABBREVIATION %in% HUC5,] # Try HUC5.2.2 and HUC5.3.2 to see that those work
 myAreaKeys <- myAreas$AREA_KEY
 
 ##Get a list of all the stations in my area
 #AreaStations <- subset(StationAreas, XLU_AREA == myAreaKey)
 AreaStations <- StationAreas[StationAreas$XLU_AREA %in% myAreaKeys,]
-myStations <- as.numeric(AreaStations$STATION)
+myStations <- as.integer(AreaStations$STATION) # Should be an integer
 
 ##Restrict stations to types of interest
 #UsedUses <- XLU_STATION_USE[XLU_STATION_USE$XLU_STATION_USE_KEY %in% unique_use,]
