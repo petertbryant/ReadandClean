@@ -91,13 +91,14 @@ HUC5.2.1<-c(HUC5.2.1,HUC5.2.list[[i]])
 HUC5.2.2<-as.integer(HUC5.2.1)
 
 # Even better, here's an external file where you can enter your search string (.csv file should have been pushed back to GitHub)
-HUC5.3<-read.csv("HUC5.csv",as.is=T)
+HUC5.3<-read.csv("HUC5.csv",colClasses="character")
+HUC5.3<-paste0(HUC5.3$HUC5,".{4}$") # Adds in search for all HUC10s
 
-HUC5.3.list<-replicate(length(HUC5.3$HUC5),list()) #empty list for global search
+HUC5.3.list<-replicate(length(HUC5.3),list()) #empty list for global search
 HUC5.3.1<-character(0) #empty character string
 
-for (i in 1:length(HUC5.3$HUC5)){
-  HUC5.3.list[[i]]<-as.vector(AreaKeys$AREA_ABBREVIATION[grep(HUC5.3$HUC5[i],as.character(AreaKeys$AREA_ABBREVIATION))])
+for (i in 1:length(HUC5.3)){
+  HUC5.3.list[[i]]<-as.vector(AreaKeys$AREA_ABBREVIATION[grep(HUC5.3[i],as.character(AreaKeys$AREA_ABBREVIATION))])
   HUC5.3.1<-c(HUC5.3.1,HUC5.3.list[[i]])
 }
 
