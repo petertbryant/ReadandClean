@@ -1,4 +1,4 @@
-## Setup Steps
+## Setup Steps ##
 # This creates a data source name driver for R to use when connecting to the database
 
 # 1. Open Windows Explorer and navigate to: C:\Windows\SysWOW64\
@@ -39,7 +39,8 @@ outpath <-"D:/LASAR/"
 outfile <- paste("LASAR_Query2_",thedate,".csv",sep="")  
 
 ## Make a connection to LASAR2 DEV
-channel <- odbcConnect("LASAR2 DEV")
+channel <- odbcConnect("LASAR2_DEV")
+access.con <- odbcConnectAccess('//deqlab1/biomon/databases/Biomon_Phoenix_nhaxton_Copy.mdb')
 
 ## Grab the names of all the tables in the database
 TableNames<- sqlTables(channel,errors = FALSE)
@@ -80,6 +81,11 @@ myAreaKeys <- myAreas$AREA_KEY
 #AreaStations <- subset(StationAreas, XLU_AREA == myAreaKey)
 AreaStations <- StationAreas[StationAreas$XLU_AREA %in% myAreaKeys,]
 myStations <- as.numeric(AreaStations$STATION)
+
+myStationsdf <- sqlQuery(access.con, "SELECT * FROM FINALReferenceData_SMiller_may2014 
+                       WHERE agency = 'DEQ'")
+myStations <- myStationsdf$agency_ID
+myStations <- as.character(myStations[1:1025])
 
 ##Restrict stations to types of interest
 #UsedUses <- XLU_STATION_USE[XLU_STATION_USE$XLU_STATION_USE_KEY %in% unique_use,]
@@ -130,7 +136,7 @@ datatypes <- sqlFetch(channel, "XLU_LASAR_DATA")
 # 1              0  Grab and Continuous
 # 2              1       Grab data only
 # 3              2 Continuous data only
-#myDatatype <- 2
+myDatatype <- 1
 
 ## Grab a list of all the parameters and numerical codes
 AllParameters <- sqlFetch(channel, "XLU_LASAR_PARAMETERS")
@@ -174,6 +180,10 @@ for (station in myStations) {
   myQuery <- append(myQuery, qry)
   }
 
+for (station in myStations) {
+  qry <- paste("SELECT * FROM Result WHERE Station =",station, sep="")
+  myQuery <- append(myQuery, qry)
+}
 
 ## Retreive data.
 for(i in 1:length(myQuery)) {
