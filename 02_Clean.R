@@ -58,3 +58,6 @@ for (i in 1:length(lst.split)){
 
 Result_clean <- sub.cases(mydata$RESULT, report) #just use the report object created in step 02_LASAR_clean.R
 mydata <- cbind(mydata, Result_clean)
+
+#save to a .csv
+#write.csv(mydata, 'C:/users/pbryant/desktop/Biomon_LASAR_Query_2014_12_04.csv')

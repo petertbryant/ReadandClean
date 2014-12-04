@@ -226,8 +226,20 @@ for(i in 1:length(myQuery)) {
   rm(data)
   }
 
+
+myQuery <- paste("SELECT * FROM Result WHERE Station in (", paste(myStations, collapse = ","), ")", sep = "")
+mydata <- sqlQuery(channel, myQuery)
+
 close(channel)
 #plot(mydata$SAMPLE_DATE_TIME, mydata$RESULT) 
+
+#Bring in the parameter name
+mydata <- merge(mydata, 
+                AllParameters[,c('XLU_LASAR_PARAMETERS_KEY','PARAMETER_NM','INDEX_COLUMN')], 
+                by.x = "XLU_LASAR_PARAMETER",
+                by.y = 'XLU_LASAR_PARAMETERS_KEY', 
+                all.x = TRUE)
+
 
 ## Write ouput to file
 #write.csv(mydata, paste(outpath,outfile,sep=""))
