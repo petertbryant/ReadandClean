@@ -1,4 +1,3 @@
-library(xlsx)
 library(stringr)
 library(plyr)
 library(reshape2)
