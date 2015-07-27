@@ -41,10 +41,11 @@ outfile <- paste("LASAR_Query2_",thedate,".csv",sep="")
 
 ## Make a connection to LASAR2 DEV
 channel <- odbcConnect("LASAR2_DEV")
+channel <- odbcConnect("LASAR2_GIS")
 access.con <- odbcConnectAccess('//deqlab1/biomon/databases/Biomon_Phoenix_nhaxton_Copy.mdb')
 
 ## Grab the names of all the tables in the database
-TableNames<- sqlTables(channel,errors = FALSE)
+TableNames<- sqlTables(channel,errors = FALSE,schema='dbo')
 
 ## Grab all the stations in the database
 StationsAll <- sqlFetch(channel, "STATION")
@@ -227,7 +228,7 @@ for(i in 1:length(myQuery)) {
   }
 
 
-myQuery <- paste("SELECT * FROM Result WHERE Station in (", paste(myStations, collapse = ","), ")", sep = "")
+myQuery <- paste("SELECT * FROM Result WHERE Station in (", paste(myStations, collapse = ","), ") AND XLU_LASAR_PARAMETER in (", paste(myParams.s, collapse = ","), ")",sep = "")
 mydata <- sqlQuery(channel, myQuery)
 
 close(channel)
