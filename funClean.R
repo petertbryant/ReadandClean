@@ -59,7 +59,7 @@ clean <- function(result) {
   Result_clean <- sub.cases(result, report) #just use the report object created in step 02_LASAR_clean.R
   attr(Result_clean, "report") <- report
   #mydata <- cbind(mydata, Result_clean)
-  returen(Result_clean)
+  return(Result_clean)
 }
 
 
